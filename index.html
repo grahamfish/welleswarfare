@@ -1,4 +1,4 @@
-<title>Welle's Warfare</title>
+<title>Welles Warfare — Made by Lakestate Digital</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -118,6 +118,8 @@
   .logo span{display:block}
   .logo .a{color:var(--gold)}
   .logo .b{color:transparent;-webkit-text-stroke:2px var(--ink);padding-left:.45em}
+  .byline{display:flex;align-items:center;gap:12px;margin:-6px 0 20px;font-family:var(--display);font-weight:800;font-size:clamp(16px,2.4vw,24px);letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+  .byline i{display:block;width:44px;height:3px;background:var(--gold)}
   .panels{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:10px}
   .panel{background:rgba(14,16,15,.8);border:1px solid var(--faint);padding:16px 18px;min-width:0}
   .panel.wide{grid-column:1/-1}
@@ -248,7 +250,8 @@
 <div id="menu" class="screen">
   <div class="menuWrap">
     <div class="menuTop"><div class="kicker"><span>1 V 1 OR ONLINE</span><b>FIRST TO 10</b><span>PRESENTED BY 2NINES</span></div></div>
-    <h1 class="logo"><span class="a">Welle's</span><span class="b">Warfare</span></h1>
+    <h1 class="logo"><span class="a">Welles</span><span class="b">Warfare</span></h1>
+    <div class="byline"><i></i>Made by Lakestate Digital</div>
     <div class="panels">
       <section class="panel"><h3><i>01</i>YOU PLAY AS</h3><div class="roster" id="pickMe"></div><h3 class="sub">SKIN</h3><div class="chips" id="pickSkin"></div></section>
       <section class="panel" id="oppPanel"><h3><i>02</i>YOU FIGHT (VS BOT)</h3><div class="roster" id="pickOpp"></div></section>
@@ -1009,7 +1012,7 @@ function grassTufts(n, ok, color = 0x7aa84a) {
   }
   im.count = k; im.receiveShadow = true; mapRoot.add(im);
 }
-const TAGS = ['2NINES', "WELLE'S WARFARE", 'GRAHAM WAS HERE', "CONRAD CAN'T AIM", 'MIZZY RUNS THIS TOWN', 'JOE WAS HERE', 'AVERY', 'YEEHAW! -WESTON', 'COLLIN', 'JACE', 'BECKETT', 'FORE!', 'DIET COKE BREAK', 'GG EZ', 'NO SCOPE', 'RESPAWN'];
+const TAGS = ['2NINES', "WELLES WARFARE", 'GRAHAM WAS HERE', "CONRAD CAN'T AIM", 'MIZZY RUNS THIS TOWN', 'JOE WAS HERE', 'AVERY', 'YEEHAW! -WESTON', 'COLLIN', 'JACE', 'BECKETT', 'FORE!', 'DIET COKE BREAK', 'GG EZ', 'NO SCOPE', 'RESPAWN'];
 const SPRAY = [['#ff3df0', '#ffd23f'], ['#3df0ff', '#2f6bff'], ['#9be36b', '#1f7a3a'], ['#ffb13d', '#ff4d2e'], ['#ffffff', '#8f96a8'], ['#c38bff', '#ff6f91']];
 function graffitiTex(text, [c1, c2], r) {
   const c = cnv(512, 256), g = c.getContext('2d'), font = s => `italic 900 ${s}px Impact, 'Arial Black', 'Arial Narrow', sans-serif`;
@@ -1452,7 +1455,7 @@ const MAPS = {
       addBox(-16, -10, 5, 1.6, 0.45, M.fabric); addBox(-16, -10.7, 5, 0.3, 0.55, M.fabric, 0.45); addBox(-18.6, -10, 0.4, 1.6, 0.75, M.fabric); addBox(-13.4, -10, 0.4, 1.6, 0.75, M.fabric);
       addBox(-16, -7.4, 2.4, 1.1, 0.45, M.floor);
       addBox(-16, -0.6, 3.2, 0.6, 0.6, M.floor); addBox(-16, -0.45, 2.8, 0.1, 1.6, M.black, 0.65);
-      glowPlane(screenTex(256, 144, (g, t) => { g.fillStyle = `hsl(${(t * 40) % 360},60%,35%)`; g.fillRect(0, 0, 256, 144); g.fillStyle = '#fff'; g.font = 'bold 26px Arial'; g.fillText("WELLE'S WARFARE", 16, 80); }), 2.6, 1.4, -16, 1.45, -0.54, Math.PI, 1.2);
+      glowPlane(screenTex(256, 144, (g, t) => { g.fillStyle = `hsl(${(t * 40) % 360},60%,35%)`; g.fillRect(0, 0, 256, 144); g.fillStyle = '#fff'; g.font = 'bold 26px Arial'; g.fillText("WELLES WARFARE", 16, 80); }), 2.6, 1.4, -16, 1.45, -0.54, Math.PI, 1.2);
       addBox(-12, -15.5, 3.2, 0.8, 1.5, M.brickRed); deco(-12, -15.2, 1.6, 0.4, 0.7, neon(0xff6a1a), 0.1); pointLight(-12, 0.8, -14.3, 0xff7a2a, 1.0, 7);
       addBox(-21.6, -7, 0.6, 4, 2.2, M.floor);
       const fan = new THREE.Group(); fan.position.set(-13, FH - 0.35, -8); for (let i = 0; i < 4; i++) { const b = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.03, 0.22), M.floor); b.position.x = 0.75; const p = new THREE.Group(); p.rotation.y = i * Math.PI / 2; p.add(b); fan.add(p); } mapRoot.add(fan); animated.push((t, dt) => { fan.rotation.y += dt * 4; });
@@ -1504,7 +1507,7 @@ const MAPS = {
       const led = screenTex(512, 192, (g, t) => {
         const hue = (t * 50) % 360; g.fillStyle = `hsl(${hue},70%,12%)`; g.fillRect(0, 0, 512, 192);
         for (let i = 0; i < 32; i++) { const hgt = (Math.sin(t * 5 + i * 0.7) * 0.5 + 0.5) * 150 + 20; g.fillStyle = `hsl(${(hue + i * 9) % 360},90%,58%)`; g.fillRect(8 + i * 15.7, 192 - hgt, 11, hgt); }
-        g.fillStyle = 'rgba(255,255,255,.92)'; g.font = 'italic 900 64px Impact, Arial Black, sans-serif'; g.textAlign = 'center'; g.fillText(Math.floor(t / 4) % 2 ? 'HEADLINER LIVE' : "WELLE'S WARFARE", 256, 82);
+        g.fillStyle = 'rgba(255,255,255,.92)'; g.font = 'italic 900 64px Impact, Arial Black, sans-serif'; g.textAlign = 'center'; g.fillText(Math.floor(t / 4) % 2 ? 'HEADLINER LIVE' : "WELLES WARFARE", 256, 82);
       }, 0.08);
       glowPlane(led, 32, 12, 0, 8, -37.9, 0, 1.5);
       glowPlane(led, 10, 5.6, -24, 8, -30, Math.PI / 5, 1.3); glowPlane(led, 10, 5.6, 24, 8, -30, -Math.PI / 5, 1.3);
@@ -1534,7 +1537,7 @@ const MAPS = {
       addBox(-33, -30, 3.2, 10, 3.8, M.white); addBox(33, -30, 3.2, 10, 3.8, M.white);
       // stadium bowl + crowd + ad boards + floodlight towers (outside the field)
       for (const [x, z, w, d] of [[0, -39.6, 80, 0.8], [0, 39.6, 80, 0.8], [-39.6, 0, 0.8, 80], [39.6, 0, 0.8, 80]]) addBox(x, z, w, d, 2.2, M.padding);
-      for (const [x, z, r, text, colr] of [[0, 39.1, Math.PI, "WELLE'S WARFARE", '#ffd23f'], [-39.1, 0, Math.PI / 2, 'DIET COKE BREAK', '#ff3a3a'], [39.1, 0, -Math.PI / 2, 'MIZZY APPROVED', '#3df0ff']]) sign(text, x, 1.1, z, r, 20, 1.6, colr);
+      for (const [x, z, r, text, colr] of [[0, 39.1, Math.PI, "WELLES WARFARE", '#ffd23f'], [-39.1, 0, Math.PI / 2, 'DIET COKE BREAK', '#ff3a3a'], [39.1, 0, -Math.PI / 2, 'MIZZY APPROVED', '#3df0ff']]) sign(text, x, 1.1, z, r, 20, 1.6, colr);
       const seats = [];
       for (let tier = 0; tier < 7; tier++) {
         const r = 44 + tier * 3, y = 1 + tier * 2;
@@ -2100,7 +2103,7 @@ const T = {
   kill: ['Sit down, {you}.', 'Is that all you’ve got, {you}?', 'Too easy.', 'I could do this all day.', 'You walked right into that one.', '{me} 1, {you} 0. Again.', 'Maybe try Recruit mode, {you}?'],
   die: ['Lucky shot!', 'Okay, now I’m mad.', 'Lag. Definitely lag.', 'Run it back!', 'I let you have that one, {you}.', 'Who taught you to aim like that?!'],
   spot: ['There you are, {you}!', 'Found you.', 'Peekaboo.', 'Gotcha in my sights.'],
-  start: ['You’re going down, {you}.', 'Welcome to Welle’s Warfare, {you}.', 'Hope you warmed up, {you}.'],
+  start: ['You’re going down, {you}.', 'Welcome to Welles Warfare, {you}.', 'Hope you warmed up, {you}.'],
   climb: ['You can’t hide up there, {you}!', 'Taking the stairs, {you}!', 'Coming up to get you!', 'Nice view up there? I’m on my way.'],
   coke: ['Catch, {you}!', 'Diet Coke break!', 'Shake it up!', 'Soda delivery!'],
   melee: ['Did you just hit me with a {w}?!', 'That’s so cheap, {you}.', 'Who brings a {w} to a gunfight?!'],
