@@ -269,7 +269,7 @@
           <dt><kbd>WASD</kbd></dt><dd>Move &middot; <kbd>Shift</kbd> sprint &middot; <kbd>Space</kbd> jump &middot; <kbd>C</kbd> crouch</dd>
           <dt><kbd>L-Click</kbd></dt><dd>Fire / swing &middot; <kbd>R-Click</kbd> aim</dd>
           <dt><kbd>1</kbd><kbd>2</kbd><kbd>Q</kbd></dt><dd>Gun / melee (or scroll wheel)</dd>
-          <dt><kbd>G</kbd></dt><dd>Throw a Diet Coke (3 per life)</dd>
+          <dt><kbd>F</kbd></dt><dd>Throw a FRE grenade: one-shot kill (3 per life)</dd>
           <dt><kbd>R</kbd></dt><dd>Reload &middot; <kbd>Esc</kbd> pause</dd>
         </dl>
       </section>
@@ -312,7 +312,7 @@
   <div class="pad" id="tReload">RLD</div>
   <div class="pad" id="tCrouch">DUCK</div>
   <div class="pad" id="tSwap">SWAP</div>
-  <div class="pad" id="tCoke">COKE</div>
+  <div class="pad" id="tCoke">FRE</div>
   <div class="pad" id="tPause">II</div>
 </div>
 
@@ -462,12 +462,23 @@ const flashTex = spriteTex((g, s) => {
 });
 const puffTex = spriteTex((g, s) => { const gr = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2); gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, s, s); }, 64);
 const holeTex = spriteTex((g, s) => { const gr = g.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2); gr.addColorStop(0, 'rgba(10,8,6,1)'); gr.addColorStop(.35, 'rgba(20,16,12,.9)'); gr.addColorStop(.6, 'rgba(40,30,20,.35)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, s, s); }, 32);
-const cokeTex = (() => {
-  const c = cnv(256, 128), g = c.getContext('2d');
-  const gr = g.createLinearGradient(0, 0, 256, 0); for (let i = 0; i <= 8; i++) gr.addColorStop(i / 8, i % 2 ? '#d9dde2' : '#aeb4bb');
-  g.fillStyle = gr; g.fillRect(0, 0, 256, 128);
-  g.fillStyle = '#d4202a'; g.fillRect(0, 96, 256, 14);
-  g.fillStyle = '#d4202a'; g.font = 'italic bold 30px Georgia, serif'; g.textAlign = 'center'; g.fillText('Diet Coke', 64, 62); g.fillText('Diet Coke', 192, 62);
+// FRE caffeine pouch tin: round lid with the wordmark, ribbed side band
+const freLidTex = (() => {
+  const c = cnv(256, 256), g = c.getContext('2d');
+  const gr = g.createRadialGradient(128, 110, 10, 128, 128, 130); gr.addColorStop(0, '#2b3a55'); gr.addColorStop(1, '#101828');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  g.strokeStyle = '#c9d2de'; g.lineWidth = 10; g.beginPath(); g.arc(128, 128, 118, 0, 7); g.stroke();
+  g.strokeStyle = '#3fd2ff'; g.lineWidth = 3; g.beginPath(); g.arc(128, 128, 104, 0, 7); g.stroke();
+  g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '900 96px Arial Black, Arial, sans-serif'; g.fillText('FRE', 128, 118);
+  g.fillStyle = '#3fd2ff'; g.font = 'bold 20px Arial, sans-serif'; g.fillText('CAFFEINE POUCHES', 128, 180);
+  g.fillStyle = '#c9d2de'; g.font = 'bold 15px Arial, sans-serif'; g.fillText('MINT · 20 POUCHES', 128, 206);
+  return new THREE.CanvasTexture(c);
+})();
+const freSideTex = (() => {
+  const c = cnv(256, 32), g = c.getContext('2d');
+  g.fillStyle = '#1a2436'; g.fillRect(0, 0, 256, 32);
+  for (let x = 0; x < 256; x += 4) { g.fillStyle = x % 8 ? 'rgba(255,255,255,.08)' : 'rgba(0,0,0,.25)'; g.fillRect(x, 0, 2, 32); }
+  g.fillStyle = '#3fd2ff'; g.fillRect(0, 13, 256, 6);
   return new THREE.CanvasTexture(c);
 })();
 
@@ -1955,7 +1966,7 @@ const RULES_DEF = {
 LO.rules = { mode: 'dm', score: '10', time: '300', hp: '100', grav: '20', heads: '0', ammo: '0', melee: '0', chaos: '0' };
 try { const saved = JSON.parse(store.get('rules', '{}')); for (const k in LO.rules) if (saved[k] != null && RULES_DEF[k][1][saved[k]] != null) LO.rules[k] = String(saved[k]); } catch (e) {}
 const CHAOS = { t: 14, active: null, until: 0, lights: [] };
-const CHAOS_EV = { moon: 'MOON GRAVITY', speed: 'SUPER SPEED', cokerain: 'DIET COKE RAIN', chickenrain: 'CHICKEN STORM', disco: 'DISCO PARTY', bighead: 'BIG HEAD MODE' };
+const CHAOS_EV = { moon: 'MOON GRAVITY', speed: 'SUPER SPEED', cokerain: 'FRE RAIN', chickenrain: 'CHICKEN STORM', disco: 'DISCO PARTY', bighead: 'BIG HEAD MODE' };
 function chaosHeads(s) { for (const m of [C, MYB, ...[...remotes.values()].map(r => r.m)]) if (m && m.head) m.head.scale.setScalar(s); }
 function chaosEnd() { if (CHAOS.active === 'bighead') chaosHeads(LO.rules.heads === '1' ? 2.1 : 1); for (const l of CHAOS.lights) scene.remove(l); CHAOS.lights.length = 0; CHAOS.active = null; }
 function chaosUpdate(dt) {
@@ -2141,7 +2152,7 @@ const T = {
   spot: ['There you are, {you}!', 'Found you.', 'Peekaboo.', 'Gotcha in my sights.'],
   start: ['You’re going down, {you}.', 'Welcome to Welles Warfare, {you}.', 'Hope you warmed up, {you}.'],
   climb: ['You can’t hide up there, {you}!', 'Taking the stairs, {you}!', 'Coming up to get you!', 'Nice view up there? I’m on my way.'],
-  coke: ['Catch, {you}!', 'Diet Coke break!', 'Shake it up!', 'Soda delivery!'],
+  coke: ['Catch, {you}!', 'FRE delivery!', 'Pop a pouch, {you}!', 'Fresh one for you!'],
   melee: ['Did you just hit me with a {w}?!', 'That’s so cheap, {you}.', 'Who brings a {w} to a gunfight?!'],
   club: ['FORE?! Really, {you}?', 'Stop swinging that thing at me!', 'Nice swing... for a beginner.'],
   knifed: ['Shouldn’t have gotten so close, {you}.', 'Up close and personal!', 'Knife to meet you.'],
@@ -2180,7 +2191,7 @@ function updateHud() {
   const t = Math.max(0, Math.ceil(match.time)); if (!isFinite(match.time) && !online()) setText('#time', '\u221e'); else if (online()) setText('#time', String(NET.inMatch + 1)); else setText('#time', `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`);
   const hp = Math.max(0, Math.round(player.hp)), hpPct = Math.round(100 * hp / MAXHP()); setText('#hpNum', `${hp} HP`);
   $('#hpFill').style.width = hpPct + '%'; $('#hpBar').classList.toggle('low', hpPct < 40);
-  setText('#slot1', `1 · ${W.tag}`); setText('#slot2', `2 · ${Mm.tag}`); setText('#slot3', `G · DIET COKE ×${player.cokes}`);
+  setText('#slot1', `1 · ${W.tag}`); setText('#slot2', `2 · ${Mm.tag}`); setText('#slot3', `F · FRE ×${player.cokes}`);
   $('#slot1').className = prim ? 'on' : ''; $('#slot2').className = prim ? '' : 'on';
   $('#slot1').hidden = !!ME().dog || meleeOnly(); $('#slot3').hidden = !!ME().dog;
   const cb = $('#ctfBar'); cb.hidden = !ctf(); if (ctf() && CTF.flags.length) setText('#ctfBar', `YOUR FLAG: ${ctfStatus(CTF.flags[0])}  \u00b7  THEIR FLAG: ${ctfStatus(CTF.flags[1])}`);
@@ -2223,12 +2234,12 @@ function updateEffects(dt) {
   }
 }
 
-// ---------------- Diet Cokes ----------------
+// ---------------- FRE grenades (pouch tins) ----------------
 const cans = [];
-const canGeo = new THREE.CylinderGeometry(0.033, 0.033, 0.122, 14);
-const canMat = new THREE.MeshStandardMaterial({ map: cokeTex, roughness: 0.28, metalness: 0.75 });
+const canGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.034, 24);
+const canMat = [new THREE.MeshStandardMaterial({ map: freSideTex, roughness: 0.4, metalness: 0.5 }), new THREE.MeshStandardMaterial({ map: freLidTex, roughness: 0.35, metalness: 0.3 }), new THREE.MeshStandardMaterial({ color: 0x9aa4b2, roughness: 0.4, metalness: 0.7 })];
 function throwCan(from, vel, owner, fuse, kind = 'coke') {
-  const m = kind === 'chicken' ? chickenMesh() : kind === 'rocket' ? rocketMesh() : new THREE.Mesh(canGeo, canMat); m.castShadow = true; if (kind === 'coke') m.scale.setScalar(1.4); scene.add(m);
+  const m = kind === 'chicken' ? chickenMesh() : kind === 'rocket' ? rocketMesh() : new THREE.Mesh(canGeo, canMat); m.castShadow = true; if (kind === 'coke') m.scale.setScalar(1.8); scene.add(m);
   cans.push({ m, kind, pos: from.clone(), vel, owner, fuse, spin: new V3(rand(-14, 14), rand(-6, 6), rand(-14, 14)), fizzT: 0 });
   sfxNoise(0.22, 5200, 0.25, 'highpass');
 }
@@ -2236,19 +2247,21 @@ function updateCans(dt) {
   for (let i = cans.length - 1; i >= 0; i--) {
     const c = cans[i], ck = c.kind === 'chicken' || c.kind === 'rocket'; c.fuse -= dt; c.vel.y -= GRAV() * (c.kind === 'rocket' ? 0 : ck ? 0.3 : 1) * dt;
     if (c.kind === 'rocket') { c.fizzT -= dt; if (c.fizzT <= 0) { c.fizzT = 0.03; puff(c.pos.clone(), 0xcfcfcf, 0.4, 0.7, 0.3); } }
-    if (ck) { // rubber chickens pop on contact with anything, including people
+    const imp = ck || c.kind === 'coke';
+    if (imp) { // chickens, rockets and FRE tins go off on contact with anything, including people
       const q = c.pos, hitAt = (x, y, z, r) => Math.hypot(q.x - x, q.y - y, q.z - z) < r;
       if ((c.owner !== 'player' && player.alive && hitAt(player.pos.x, player.pos.y + 1, player.pos.z, 1.1)) || ((c.owner === 'player' || c.owner === 'world') && bot.alive && !online() && hitAt(bot.pos.x, bot.pos.y + 1, bot.pos.z, 1.2)) ||
         (c.owner === 'player' && [...remotes.values()].some(R => R.alive && R.m.root.visible && hitAt(R.pos.x, R.pos.y + 1, R.pos.z, 1.2)))) c.fuse = 0;
     }
     const np = c.pos.clone().addScaledVector(c.vel, dt);
+    const hitBox = boxes.some(b => np.x > b.minX && np.x < b.maxX && np.z > b.minZ && np.z < b.maxZ && np.y > b.minY && np.y < b.maxY);
     for (const b of boxes) if (np.x > b.minX && np.x < b.maxX && np.z > b.minZ && np.z < b.maxZ && np.y > b.minY && np.y < b.maxY) {
       if (c.pos.y >= b.maxY - 0.01) { np.y = b.maxY + 0.04; c.vel.y = Math.abs(c.vel.y) * 0.3; c.vel.x *= 0.7; c.vel.z *= 0.7; }
       else if (c.pos.y <= b.minY + 0.01) { np.y = b.minY - 0.04; c.vel.y = -Math.abs(c.vel.y) * 0.3; }
       else if (c.pos.x <= b.minX || c.pos.x >= b.maxX) { np.x = c.pos.x <= b.minX ? b.minX - 0.04 : b.maxX + 0.04; c.vel.x *= -0.4; }
       else { np.z = c.pos.z <= b.minZ ? b.minZ - 0.04 : b.maxZ + 0.04; c.vel.z *= -0.4; }
     }
-    if (ck && (np.y < 0.1 || boxes.some(b => np.x > b.minX && np.x < b.maxX && np.z > b.minZ && np.z < b.maxZ && np.y > b.minY && np.y < b.maxY))) c.fuse = 0;
+    if (imp && (np.y < 0.1 || hitBox)) c.fuse = 0;
     if (np.y < 0.07) { np.y = 0.07; c.vel.y = Math.abs(c.vel.y) * 0.3; c.vel.x *= 0.72; c.vel.z *= 0.72; if (c.vel.y < 0.8) c.vel.y = 0; c.spin.multiplyScalar(0.8); }
     np.x = clamp(np.x, -39.5, 39.5); np.z = clamp(np.z, -39.5, 39.5);
     c.pos.copy(np); c.m.position.copy(np);
@@ -2258,10 +2271,10 @@ function updateCans(dt) {
   }
 }
 function explodeCan(c) {
-  const ck = c.kind === 'chicken', rk = c.kind === 'rocket', W = rk ? 'ROCKET' : ck ? 'CHICKEN' : 'DIET COKE', p = c.pos.clone().add(new V3(0, 0.3, 0)), R = rk ? 6 : ck ? 4.5 : 6.5, BASE = rk ? 150 : ck ? 110 : 115;
+  const ck = c.kind === 'chicken', rk = c.kind === 'rocket', W = rk ? 'ROCKET' : ck ? 'CHICKEN' : 'FRE', p = c.pos.clone().add(new V3(0, 0.3, 0)), R = rk ? 6 : ck ? 4.5 : 8, BASE = rk ? 150 : ck ? 110 : 115;
   if (rk) { sfxShot(1, 0, 0, { lp: 1100, len: 0.8, thump: 45 }); for (let i = 0; i < 34; i++) puff(p.clone(), pick([0xff8a2a, 0xffd23f, 0xff5a1a, 0x555555, 0x333333]), rand(0.8, 2.2), rand(0.5, 1.2), 0.6, new V3(rand(-8, 8), rand(1, 8), rand(-8, 8))); }
   else if (ck) { sfxTone(900, 0.25, 'square', 0.2, 300); for (let i = 0; i < 24; i++) puff(p.clone(), pick([0xffffff, 0xf5e6a0, 0xf5d33a]), rand(0.3, 0.7), rand(0.6, 1.2), -0.3, new V3(rand(-6, 6), rand(1, 7), rand(-6, 6))); }
-  else for (let i = 0; i < 26; i++) puff(p.clone().add(new V3(rand(-0.6, 0.6), rand(0, 0.8), rand(-0.6, 0.6))), pick([0x4a2e18, 0x7a5434, 0xe8dcc8, 0xc8a27a, 0xffffff]), rand(1.2, 2.6), rand(0.6, 1.3), rand(0.4, 1.6), new V3(rand(-7, 7), rand(2, 9), rand(-7, 7)));
+  else for (let i = 0; i < 26; i++) puff(p.clone().add(new V3(rand(-0.6, 0.6), rand(0, 0.8), rand(-0.6, 0.6))), pick([0x3fd2ff, 0xbff4ff, 0xffffff, 0x2b3a55, 0x9ae6c8]), rand(1.2, 2.6), rand(0.6, 1.3), rand(0.4, 1.6), new V3(rand(-7, 7), rand(2, 9), rand(-7, 7)));
   puff(p, 0xfff4dc, 4, 0.25, 0);
   const cam = camera.position, d0 = cam.distanceTo(p);
   const dx = p.x - player.pos.x, dz = p.z - player.pos.z, pan = (dx * Math.cos(player.yaw) + dz * -Math.sin(player.yaw)) / (Math.hypot(dx, dz) || 1);
@@ -2270,7 +2283,7 @@ function explodeCan(c) {
   if (player.alive) {
     const chest = new V3(player.pos.x, player.pos.y + 1.1, player.pos.z), d = chest.distanceTo(p);
     if (d < R && los(p, chest)) {
-      let dmg = BASE * (1 - d / R); if (c.owner === 'player') dmg *= 0.5;
+      let dmg = c.kind === 'coke' ? 999 : BASE * (1 - d / R); if (c.owner === 'player' && c.kind !== 'coke') dmg *= 0.5;
       const away = chest.clone().sub(p).setY(0).normalize(); player.vel.addScaledVector(away, 9 * (1 - d / R)); player.vel.y += 4 * (1 - d / R); player.onGround = false;
       damagePlayer(dmg, p, W, { env: c.owner === 'world', self: c.owner === 'player', killer: c.owner.startsWith('r:') ? c.owner.slice(2) : undefined });
     }
@@ -2279,7 +2292,7 @@ function explodeCan(c) {
     const chest = new V3(bot.pos.x, bot.pos.y + 1.1, bot.pos.z), d = chest.distanceTo(p);
     if (d < R && los(p, chest)) {
       const away = chest.clone().sub(p).setY(0).normalize(); bot.vel.addScaledVector(away, 10 * (1 - d / R)); bot.vy = 4 * (1 - d / R);
-      damageBot(BASE * (1 - d / R), false, W); match.hits++;
+      damageBot(c.kind === 'coke' ? 999 : BASE * (1 - d / R), false, W); match.hits++;
     }
   }
 }
@@ -2294,7 +2307,7 @@ addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'Space') { jumpQueued = true; e.preventDefault(); }
   if (e.code === 'KeyR') reloadQueued = true;
-  if (e.code === 'KeyG') throwQueued = true;
+  if (e.code === 'KeyF') throwQueued = true;
   if (e.code === 'KeyC') player.crouchToggle = !player.crouchToggle;
   if (e.code === 'Digit1') switchWeapon('primary');
   if (e.code === 'Digit2') switchWeapon('melee');
@@ -2515,9 +2528,9 @@ function updatePlayer(dt) {
       p.cokes--; p.cokeCd = 0.7; p.throwT = 0.35;
       camera.updateMatrixWorld();
       const fwd = new V3(0, 0, -1).applyQuaternion(camera.quaternion), from = camera.localToWorld(new V3(0.18, -0.08, -0.45));
-      const cv = fwd.multiplyScalar(17).add(new V3(p.vel.x * 0.6, 3.5, p.vel.z * 0.6));
+      const cv = fwd.multiplyScalar(34).add(new V3(p.vel.x * 0.6, 3, p.vel.z * 0.6));
       if (online()) { NET.cans.push([++NET.canSeq, r2(from.x), r2(from.y), r2(from.z), r2(cv.x), r2(cv.y), r2(cv.z)]); if (NET.cans.length > 4) NET.cans.shift(); }
-      throwCan(from, cv, 'player', 1.6);
+      throwCan(from, cv, 'player', 8);
       if (bot.alive) bot.pathT = 0;
     } else if (p.cokes <= 0) sfxClick(0.25, 3000);
   }
@@ -2536,13 +2549,13 @@ function damagePlayer(dmg, from, wpn = 'AR', o = {}) {
     NET.dth = [++NET.dthSeq, R ? R.peer : '', String(wpn).slice(0, 14)];
     if (R) match.deaths++;
     feed(R ? `<span style="color:${kc.color};font-weight:700">${kc.name}</span><span class="w">[${esc(wpn)}]</span>${nm('me')}` : `${nm('me')}<span class="w">[${esc(wpn)}]</span>`);
-    $('#killer').textContent = R ? kc.name : o.self ? 'Your own Diet Coke' : wpn;
+    $('#killer').textContent = R ? kc.name : o.self ? 'Your own FRE' : wpn;
     $('#taunt').textContent = R ? `${kc.name} got you. Go get them back.` : 'Walk it off.'; $('#death').hidden = false;
     return;
   }
   if (o.env || o.self) {
     feed(`${nm('me')}<span class="w">[${wpn}]</span>`);
-    $('#killer').textContent = o.self ? 'Your own Diet Coke' : wpn; $('#taunt').textContent = `“${say(o.env ? (wpn === 'WATER HAZARD' ? ['Glub glub. Stay out of the water, {you}.', 'That pond is deeper than it looks, {you}.'] : T.lava) : T.kill)}”`; $('#death').hidden = false; chat($('#taunt').textContent.slice(1, -1));
+    $('#killer').textContent = o.self ? 'Your own FRE' : wpn; $('#taunt').textContent = `“${say(o.env ? (wpn === 'WATER HAZARD' ? ['Glub glub. Stay out of the water, {you}.', 'That pond is deeper than it looks, {you}.'] : T.lava) : T.kill)}”`; $('#death').hidden = false; chat($('#taunt').textContent.slice(1, -1));
     return;
   }
   if (!ctf()) match.deaths++;
@@ -2565,8 +2578,8 @@ function damageBot(dmg, head, wpn) {
   if (!ctf()) match.kills++; match.streak++; ctfDrop('bot');
   const melee = Object.values(MELEES).some(m => m.tag === wpn);
   feed(`${nm('me')}<span class="w">[${wpn}]</span>${nm('opp')}${head ? '<span class="hs">HEADSHOT</span>' : ''}`);
-  pop(`${OPP().name} ${wpn === 'LAVA' ? 'MELTED' : wpn === 'WATER HAZARD' ? 'DUNKED' : melee ? 'SMACKED' : wpn === 'DIET COKE' ? 'FIZZED' : 'ELIMINATED'}`);
-  pop(wpn === 'DRIVER' ? '+250 HOLE IN ONE' : melee ? '+200 MELEE' : wpn === 'DIET COKE' ? '+150 SODA BLAST' : head ? '+150 HEADSHOT' : '+100', 'xp');
+  pop(`${OPP().name} ${wpn === 'LAVA' ? 'MELTED' : wpn === 'WATER HAZARD' ? 'DUNKED' : melee ? 'SMACKED' : wpn === 'FRE' ? 'POUCHED' : 'ELIMINATED'}`);
+  pop(wpn === 'DRIVER' ? '+250 HOLE IN ONE' : melee ? '+200 MELEE' : wpn === 'FRE' ? '+150 FRE BLAST' : head ? '+150 HEADSHOT' : '+100', 'xp');
   if (match.streak === 3) pop('3 KILL STREAK', 'xp');
   if (match.streak === 5) pop('5 KILL STREAK — UNSTOPPABLE', 'xp');
   setTimeout(() => chat(wpn === 'LAVA' ? 'AAAH HOT HOT HOT' : wpn === 'WATER HAZARD' ? '*splash* ...really?' : ['DRIVER', '7-IRON', 'PUTTER'].includes(wpn) ? say(TS('club')) : melee ? say(TS('melee'), { w: wpn.toLowerCase() }) : say(TS('die'))), 600);
@@ -2682,10 +2695,10 @@ function updateBot(dt) {
     if (b.meleeCd <= 0) { b.meleeCd = 1.1; sfxWhiz(0); damagePlayer(55, b.pos, 'KNIFE'); }
   } else if (b.sees && player.alive && now > b.reactT && !meleeOnly()) {
     if (dist > 8 && dist < 26 && now > b.canCd) {
-      b.canCd = now + rand(7, 12) * D.cans;
+      b.canCd = now + rand(10, 16) * D.cans;
       const from = new V3(b.pos.x, b.pos.y + 1.6, b.pos.z), tgt = player.pos.clone().addScaledVector(player.vel, 0.5);
       const dx = tgt.x - from.x, dz = tgt.z - from.z, hd = Math.hypot(dx, dz) || 1, sp = 14, t = hd / sp, vy = (tgt.y + 0.1 - from.y + 0.5 * GRAV() * t * t) / t;
-      throwCan(from, new V3(dx / hd * sp, vy, dz / hd * sp), 'bot', t + 0.35);
+      throwCan(from, new V3(dx / hd * sp, vy, dz / hd * sp), 'bot', 8);
       if (Math.random() < 0.6) chat(say(TS('coke')));
     }
     b.fireCd -= dt;
@@ -2824,7 +2837,7 @@ function updateRemotes(dt) {
     if (Array.isArray(P.cans)) for (const c of P.cans) {
       if (!Array.isArray(c) || (+c[0] || 0) <= R.canSeq) continue;
       R.canSeq = +c[0];
-      throwCan(new V3(num(c[1], -40, 40), num(c[2], 0, 40), num(c[3], -40, 40)), new V3(num(c[4], -40, 40), num(c[5], -40, 40), num(c[6], -40, 40)), 'r:' + R.peer, c[7] === 'c' ? 5 : c[7] === 'r' ? 4 : 1.6, c[7] === 'c' ? 'chicken' : c[7] === 'r' ? 'rocket' : 'coke');
+      throwCan(new V3(num(c[1], -40, 40), num(c[2], 0, 40), num(c[3], -40, 40)), new V3(num(c[4], -40, 40), num(c[5], -40, 40), num(c[6], -40, 40)), 'r:' + R.peer, c[7] === 'c' ? 5 : c[7] === 'r' ? 4 : 8, c[7] === 'c' ? 'chicken' : c[7] === 'r' ? 'rocket' : 'coke');
     }
     const kk = num(P.k, 0, 999);
     if (!leader || kk > leader.k) leader = { k: kk, name: ROSTER[R.ch].name, color: ROSTER[R.ch].color };
@@ -2967,7 +2980,7 @@ function drawFx(dt) {
     fxg.strokeStyle = `rgba(230,30,20,${clamp(d.t, 0, 0.85)})`; fxg.lineWidth = 7 * dpr;
     fxg.beginPath(); fxg.arc(cx, cy, Math.min(W, H) * 0.2, ang - 0.32, ang + 0.32); fxg.stroke();
   }
-  // incoming Diet Coke warning
+  // incoming FRE warning
   for (const c of cans) {
     if (c.owner === 'player' || c.pos.distanceTo(p.pos) > 11) continue;
     const v = c.pos.clone().project(camera); let x = (v.x + 1) / 2 * W, y = (1 - v.y) / 2 * H;
